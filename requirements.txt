@@ -1,0 +1,5 @@
+setuptools==80.9.0
+pybind11==2.13.6
+pyedid==1.0.3
+loguru==0.7.3
+platformdirs==4.3.8
