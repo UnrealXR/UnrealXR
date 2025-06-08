@@ -145,11 +145,6 @@ def main():
         # TODO: implement EDID patching for overridden displays
         logger.info("Patching EDID firmware")
         patched_edid = libunreal.patch_edid_to_be_specialized(edid.edid)
-        logger.debug("dumping custom fw")
-
-        with open("/tmp/fw.bin", "wb") as fw_dump:
-            fw_dump.write(patched_edid)
-
         libunreal.upload_edid_firmware(edid, patched_edid)
 
         def unload_custom_fw():
