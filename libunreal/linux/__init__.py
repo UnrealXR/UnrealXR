@@ -5,6 +5,9 @@ from libunreal.supported_devices import supported_devices
 from libunreal.edid import EvdiDisplaySpec
 import pyedid
 
+def upload_new_device_edid(display_spec: EvdiDisplaySpec, edid: bytes | bytearray):
+    pass
+
 def fetch_xr_glass_edid(allow_unsupported_devices) -> EvdiDisplaySpec:
     # Scan for all VGA devices and their IDs
     pci_device_comand = subprocess.run(["lspci"], capture_output=True)
@@ -69,6 +72,13 @@ def fetch_xr_glass_edid(allow_unsupported_devices) -> EvdiDisplaySpec:
 
                                 max_refresh = int(manufacturer_supported_devices[edid.name]["max_refresh"])
 
-                            return EvdiDisplaySpec(raw_edid_file, max_width, max_height, max_refresh)
+                            return EvdiDisplaySpec(raw_edid_file, max_width, max_height, max_refresh, card_device, monitor.replace(f"{card_device}-", ""))
 
     raise ValueError("Could not find supported device. Check if the device is plugged in. If it is plugged in and working correctly, check the README or open an issue.")
+
+def upload_edid_firmware(display: EvdiDisplaySpec, fw: bytes | bytearray):
+    if display.linux_drm_connector == "" or display.linux_drm_card == "":
+        raise ValueError("Linux DRM connector and/or Linux DRM card not specified!")
+
+    with open(f"/sys/kernel/debug/dri/{display.linux_drm_card.replace("card", "")}/{display.linux_drm_connector}/edid_override", "wb") as kernel_edid:
+        kernel_edid.write(fw)

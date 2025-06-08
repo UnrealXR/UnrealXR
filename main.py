@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+from sys import platform
 import atexit
 import json
 import os
@@ -9,8 +10,8 @@ import PyEvdi
 import pyedid
 import time
 
+from render import render_loop
 import libunreal
-from libunreal.edid import EvdiDisplaySpec
 
 default_configuration: dict[str, str | int] = {
     "display_angle": 45,
@@ -42,7 +43,7 @@ def find_suitable_evdi_card() -> int:
             used_cards.append(i)
             return i
 
-    raise ValueError("Failed to allocate available device")
+    raise ValueError("Failed to allocate virtual display device")
 
 @logger.catch
 def main():
@@ -104,7 +105,7 @@ def main():
 
     # Get the display EDID
     logger.info("Attempting to read display EDID file")
-    edid: EvdiDisplaySpec | None = None
+    edid: libunreal.EvdiDisplaySpec | None = None
 
     if configuration["override_default_edid"] or configuration["allow_unsupported_vendors"]:
         # We need to parse it to get the maximum width, height, and refresh rate for EVDI's calculations
@@ -127,18 +128,39 @@ def main():
                         max_refresh = max(max_refresh, int(resolution[2]))
 
             if max_width == 0 or max_height == 0:
-                raise ValueError("Could not determine maximum width and height from EDID file, and the ")
+                raise ValueError("Could not determine maximum width and/or height from EDID file, and the width and/or height overrides aren't set!")
 
             if max_refresh == 0:
                 raise ValueError("Could not determine maximum refresh rate from EDID file, and the refresh rate overrides aren't set!")
+
+            edid = libunreal.EvdiDisplaySpec(edid_file, max_width, max_height, max_refresh, "", "")
     else:
         edid = libunreal.fetch_xr_glass_edid(configuration["allow_unsupported_devices"])
 
     assert(edid is not None)
-
     logger.info("Got EDID file")
-    logger.info("Initializing virtual displays")
 
+    if platform == "linux" or platform == "linux2":
+        # TODO: implement EDID patching for overridden displays
+        logger.info("Patching EDID firmware")
+        patched_edid = libunreal.patch_edid_to_be_specialized(edid.edid)
+        logger.debug("dumping custom fw")
+
+        with open("/tmp/fw.bin", "wb") as fw_dump:
+            fw_dump.write(patched_edid)
+
+        libunreal.upload_edid_firmware(edid, patched_edid)
+
+        def unload_custom_fw():
+            with open(f"/sys/kernel/debug/dri/{edid.linux_drm_card.replace("card", "")}/{edid.linux_drm_connector}/edid_override", "w") as kernel_edid:
+                kernel_edid.write("reset")
+
+            logger.info("Please unplug and plug in your XR device to restore it back to normal settings.")
+
+        atexit.register(unload_custom_fw)
+        input("Press the Enter key to continue loading after you unplug and plug in your XR device.")
+
+    logger.info("Initializing virtual displays")
     cards = []
 
     for i in range(int(configuration["display_count"])):
@@ -147,13 +169,14 @@ def main():
         card.connect(edid.edid, len(edid.edid), edid.max_width*edid.max_height, edid.max_width*edid.max_height*edid.max_refresh_rate)
         cards.append(card)
 
-        logger.debug(f"Initialized card #{str(i)}")
+        logger.debug(f"Initialized card #{str(i+1)}")
 
         atexit.register(lambda: card.close())
 
     logger.info("Initialized displays")
+    logger.info("Beginning rendering")
 
-    time.sleep(10)
+    render_loop(edid, cards)
 if __name__ == "__main__":
     print("Welcome to UnrealXR!\n")
     main()

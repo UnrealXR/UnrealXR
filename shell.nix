@@ -16,12 +16,13 @@
     xorg.libXcursor
     xorg.libXrandr
     xorg.libXinerama
+    xorg.libX11
     waylandpp
     libxkbcommon
   ];
 
   shellHook = ''
-    export LD_LIBRARY_PATH="$PWD/evdi/library:$LD_LIBRARY_PATH"
+    export LD_LIBRARY_PATH="$PWD/evdi/library:${pkgs.lib.makeLibraryPath [ pkgs.xorg.libX11 pkgs.libGL ]}:$LD_LIBRARY_PATH"
     mkdir -p "$PWD/data/config" "$PWD/data/data"
     export UNREALXR_CONFIG_PATH="$PWD/data/config"
     export UNREALXR_DATA_PATH="$PWD/data/data"
