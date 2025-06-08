@@ -23,6 +23,13 @@
     xorg.libXrandr
     xorg.libXinerama
     xorg.libX11
+
+    # nreal driver build dependencies
+    hidapi
+    json_c
+    udev
+    libusb1
+    opencv
   ];
 
   shellHook = ''
