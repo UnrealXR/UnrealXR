@@ -1,3 +1,6 @@
 [submodule "evdi"]
 	path = evdi
 	url = https://github.com/DisplayLink/evdi
+[submodule "raylib-python-cffi"]
+	path = raylib-python-cffi
+	url = https://git.terah.dev/imterah/raylib-python-cffi

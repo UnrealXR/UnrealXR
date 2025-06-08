@@ -8,6 +8,7 @@ from platformdirs import user_data_dir, user_config_dir
 from loguru import logger
 import PyEvdi
 import pyedid
+import pyray
 import time
 
 from render import render_loop
@@ -160,6 +161,11 @@ def main():
         atexit.register(unload_custom_fw)
         input("Press the Enter key to continue loading after you unplug and plug in your XR device.")
 
+    # Raylib gets confused if there's multiple dri devices so we initialize the window before anything
+    logger.info("Initializing XR headset")
+    pyray.set_target_fps(edid.max_refresh_rate)
+    pyray.init_window(edid.max_width, edid.max_height, "UnrealXR")
+
     logger.info("Initializing virtual displays")
     cards = []
 
@@ -173,9 +179,7 @@ def main():
 
         atexit.register(lambda: card.close())
 
-    logger.info("Initialized displays")
-    logger.info("Beginning rendering")
-
+    logger.info("Initialized displays. Entering rendering loop")
     render_loop(edid, cards)
 if __name__ == "__main__":
     print("Welcome to UnrealXR!\n")
