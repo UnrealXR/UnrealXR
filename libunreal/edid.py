@@ -1,11 +1,12 @@
 from loguru import logger
 
-import dataclasses
+from dataclasses import dataclass
 import uuid
 
-@dataclasses.dataclass
+@dataclass
 class EvdiDisplaySpec:
     edid: bytes
+    device_vendor: str
     max_width: int
     max_height: int
     max_refresh_rate: int

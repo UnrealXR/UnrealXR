@@ -72,7 +72,7 @@ def fetch_xr_glass_edid(allow_unsupported_devices) -> EvdiDisplaySpec:
 
                                 max_refresh = int(manufacturer_supported_devices[edid.name]["max_refresh"])
 
-                            return EvdiDisplaySpec(raw_edid_file, max_width, max_height, max_refresh, card_device, monitor.replace(f"{card_device}-", ""))
+                            return EvdiDisplaySpec(raw_edid_file, edid.manufacturer_pnp_id, max_width, max_height, max_refresh, card_device, monitor.replace(f"{card_device}-", ""))
 
     raise ValueError("Could not find supported device. Check if the device is plugged in. If it is plugged in and working correctly, check the README or open an issue.")
 

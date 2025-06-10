@@ -134,7 +134,7 @@ def main():
             if max_refresh == 0:
                 raise ValueError("Could not determine maximum refresh rate from EDID file, and the refresh rate overrides aren't set!")
 
-            edid = libunreal.EvdiDisplaySpec(edid_file, max_width, max_height, max_refresh, "", "")
+            edid = libunreal.EvdiDisplaySpec(edid_file, parsed_edid_file.name if parsed_edid_file.name else "", max_width, max_height, max_refresh, "", "")
     else:
         edid = libunreal.fetch_xr_glass_edid(configuration["allow_unsupported_devices"])
 

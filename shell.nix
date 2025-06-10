@@ -33,7 +33,7 @@
   ];
 
   shellHook = ''
-    export LD_LIBRARY_PATH="$PWD/evdi/library:${pkgs.lib.makeLibraryPath [ pkgs.libGL ]}:$LD_LIBRARY_PATH"
+    export LD_LIBRARY_PATH="$PWD/modules/evdi/library:${pkgs.lib.makeLibraryPath [ pkgs.libGL ]}:$LD_LIBRARY_PATH"
     mkdir -p "$PWD/data/config" "$PWD/data/data"
     export UNREALXR_CONFIG_PATH="$PWD/data/config"
     export UNREALXR_DATA_PATH="$PWD/data/data"
