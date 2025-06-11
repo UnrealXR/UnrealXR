@@ -1,8 +1,13 @@
 #!/usr/bin/env python3
 from sys import platform
+import logging
 import atexit
 import json
 import os
+
+# Silence pyray init messages
+raylib_python_logger = logging.getLogger("raylib")
+raylib_python_logger.setLevel(logging.ERROR)
 
 from platformdirs import user_data_dir, user_config_dir
 from loguru import logger
@@ -16,6 +21,7 @@ import libunreal
 
 default_configuration: dict[str, str | int] = {
     "display_angle": 45,
+    "display_pixel_spacing": 45,
     "display_count": 3,
     "allow_unsupported_devices": False,
     "allow_unsupported_vendors": False,
@@ -106,7 +112,7 @@ def main():
 
     # Get the display EDID
     logger.info("Attempting to read display EDID file")
-    edid: libunreal.EvdiDisplaySpec | None = None
+    edid: libunreal.UnrealXRDisplayMetadata | None = None
 
     if configuration["override_default_edid"] or configuration["allow_unsupported_vendors"]:
         # We need to parse it to get the maximum width, height, and refresh rate for EVDI's calculations
@@ -134,7 +140,7 @@ def main():
             if max_refresh == 0:
                 raise ValueError("Could not determine maximum refresh rate from EDID file, and the refresh rate overrides aren't set!")
 
-            edid = libunreal.EvdiDisplaySpec(edid_file, parsed_edid_file.name if parsed_edid_file.name else "", max_width, max_height, max_refresh, "", "")
+            edid = libunreal.UnrealXRDisplayMetadata(edid_file, parsed_edid_file.name if parsed_edid_file.name else "", {}, max_width, max_height, max_refresh, "", "")
     else:
         edid = libunreal.fetch_xr_glass_edid(configuration["allow_unsupported_devices"])
 
@@ -176,6 +182,7 @@ def main():
 
     logger.info("Initialized displays. Entering rendering loop")
     render_loop(edid, cards)
+
 if __name__ == "__main__":
     print("Welcome to UnrealXR!\n")
     main()

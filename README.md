@@ -39,11 +39,11 @@ From there, you need to follow all the below steps if applicable to your current
 
 1. First, you need to build the native version of raylib. To do that, go inside the `modules/raylib-python-cffi/raylib-c` directory.
 2. Then, make the build directories and go into them: `mkdir -p build/out; cd build`
-3. Configure raylib: `cmake  -DCUSTOMIZE_BUILD=ON -DSUPPORT_FILEFORMAT_JPG=ON -DSUPPORT_FILEFORMAT_FLAC=ON -DWITH_PIC=ON -DCMAKE_BUILD_TYPE=Release -DPLATFORM=DRM -DENABLE_WAYLAND_DRM_LEASING=ON -DSUPPORT_CLIPBOARD_IMAGE=ON -DCMAKE_INSTALL_PREFIX:PATH=$PWD/out ..`
+3. Configure raylib: `cmake  -DCUSTOMIZE_BUILD=ON -DSUPPORT_FILEFORMAT_JPG=ON -DSUPPORT_FILEFORMAT_FLAC=ON -DWITH_PIC=ON -DCMAKE_BUILD_TYPE=Release -DPLATFORM=DRM -DENABLE_WAYLAND_DRM_LEASING=ON -DSUPPORT_CLIPBOARD_IMAGE=ON -DBUILD_EXAMPLES=OFF -DSUPPORT_SSH_KEYBOARD_RPI=OFF -DDISABLE_EVDEV_INPUT=ON -DCMAKE_INSTALL_PREFIX:PATH=$PWD/out ..`
 4. Finally, build and install raylib: `make install -j$(nproc)`
 5. After that, you need to build the Python bindings. To do that, go to the `modules/raylib-python-cffi` directory. Assuming you did everything correctly, you should be able to go 2 directories back (`../..`) to get there.
 6. If you're on normal Linux and are not using Nix, do this command to build the package: `PKG_CONFIG_PATH="$PKG_CONFIG_PATH:$PWD/raylib-c/build/out/lib64/pkgconfig/" ENABLE_WAYLAND_DRM_LEASING=YES RAYLIB_PLATFORM=DRM python3 setup.py bdist_wheel`
-7. If you are using Nix/NixOS, do this command to build the package: `PKG_CONFIG_PATH_FOR_TARGET="$PKG_CONFIG_PATH_FOR_TARGET:$PWD/raylib-c/build/out/lib64/pkgconfig/" ENABLE_WAYLAND_DRM_LEASING=YES RAYLIB_PLATFORM=DRM python3 setup.py bdist_wheel; pip install dist/*.whl`
+7. If you are using Nix/NixOS, do this command to build the package: `PKG_CONFIG_PATH_FOR_TARGET="$PKG_CONFIG_PATH_FOR_TARGET:$PWD/raylib-c/build/out/lib64/pkgconfig/" ENABLE_WAYLAND_DRM_LEASING=YES RAYLIB_PLATFORM=DRM python3 setup.py bdist_wheel`
 8. Finally, install the package: `pip install dist/*.whl`
 
 ### Building `PyEvdi` (Linux)

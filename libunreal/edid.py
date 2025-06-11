@@ -4,9 +4,10 @@ from dataclasses import dataclass
 import uuid
 
 @dataclass
-class EvdiDisplaySpec:
+class UnrealXRDisplayMetadata:
     edid: bytes
     device_vendor: str
+    device_quirks: dict[str, str | int]
     max_width: int
     max_height: int
     max_refresh_rate: int

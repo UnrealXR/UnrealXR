@@ -1,11 +1,11 @@
-from time import sleep
+import time
 import math
 
 from loguru import logger
 import PyEvdi
 import pyray
 
-from libunreal import EvdiDisplaySpec, MCUCallbackWrapper, start_mcu_event_listener
+from libunreal import UnrealXRDisplayMetadata, MCUCallbackWrapper, start_mcu_event_listener
 
 previous_pitch = 0.0
 previous_yaw = 0.0
@@ -64,7 +64,7 @@ def text_message(message: str):
 def stub_brightness_function(brightness: int):
     pass
 
-def render_loop(display_metadata: EvdiDisplaySpec, cards: list[PyEvdi.Card]):
+def render_loop(display_metadata: UnrealXRDisplayMetadata, cards: list[PyEvdi.Card]):
     logger.info("Starting sensor event listener")
 
     mcu_callbacks = MCUCallbackWrapper(roll_callback, pitch_callback, yaw_callback, text_message, stub_brightness_function, stub_brightness_function)
@@ -73,7 +73,7 @@ def render_loop(display_metadata: EvdiDisplaySpec, cards: list[PyEvdi.Card]):
     logger.info("Beginning sensor initialization. Awaiting first sensor update")
 
     while (not has_gotten_pitch_callback_before) or (not has_gotten_yaw_callback_before) or (not has_gotten_roll_callback_before):
-        sleep(0.01)
+        time.sleep(0.01)
 
     logger.info("Initialized sensors")
 
@@ -89,17 +89,34 @@ def render_loop(display_metadata: EvdiDisplaySpec, cards: list[PyEvdi.Card]):
     movement_vector = pyray.Vector3()
     look_vector = pyray.Vector3()
 
-    logger.error("QUIRK: Waiting 10 seconds before reading sensors due to sensor drift bugs")
-    sleep(10)
-    logger.error("Continuing...")
+    has_z_vector_disabled_quirk = False
+    has_sensor_init_delay_quirk = False
+    sensor_init_start_time = time.time()
+
+    if "z_vector_disabled" in display_metadata.device_quirks:
+        logger.warning("QUIRK: The Z vector has been disabled for your specific device")
+        has_z_vector_disabled_quirk = True
+
+    if "sensor_init_delay" in display_metadata.device_quirks:
+        logger.warning(f"QUIRK: Waiting {str(display_metadata.device_quirks["sensor_init_delay"])} second(s) before reading sensors")
+        logger.warning("|| MOVEMENT WILL NOT BE OPERATIONAL DURING THIS TIME. ||")
+        sensor_init_start_time = time.time()
+        has_sensor_init_delay_quirk = True
 
     while not pyray.window_should_close():
-        look_vector.x = (current_yaw-previous_yaw)*6.5
-        look_vector.y = (current_pitch-previous_pitch)*6.5
-        # the Z vector is more trouble than its worth so it just doesn't get accounted for...
-        #look_vector.z = (current_roll-previous_roll)*6.5
+        if has_sensor_init_delay_quirk:
+            if time.time() - sensor_init_start_time >= int(display_metadata.device_quirks["sensor_init_delay"]):
+                # Unset the quirk state
+                logger.info("Movement is now enabled.")
+                has_sensor_init_delay_quirk = False
+        else:
+            look_vector.x = (current_yaw-previous_yaw)*6.5
+            look_vector.y = (current_pitch-previous_pitch)*6.5
 
-        pyray.update_camera_pro(camera, movement_vector, look_vector, 0.0)
+            if not has_z_vector_disabled_quirk:
+                look_vector.z = (current_roll-previous_roll)*6.5
+
+            pyray.update_camera_pro(camera, movement_vector, look_vector, 0.0)
 
         pyray.begin_drawing()
         pyray.clear_background(pyray.BLACK)
