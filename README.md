@@ -14,10 +14,9 @@ UnrealXR is a spatial multi-display renderer for the Xreal line of devices, enab
 ## Why not the normal Nebula app?
 
 1. **Incompatibility**: The normal Nebula app doesn't support Linux. Of course, we won't support Windows for the forseeable future, and macOS isn't on our roadmap. So this isn't really a fair point.
-1. **Bloat**: The drivers for the Xreal line of devices are bundled into a streaming app, which is a little bit absurd. Instead, UnrealXR is just UnrealXR with no extra dependencies required.
 2. **Closed Source**: The Nebula app and the normal SDK is closed source, so we don't really know what it's doing internally.
 
-**TL;DR**: The normal Nebula app is only compatible with Windows and macOS. However, we only support Linux, so that isn't a fair comparison. The Nebula app is more bloated, and it is also closed source.
+**TL;DR**: The normal Nebula app is only compatible with Windows and macOS. However, we only support Linux, so that isn't a fair comparison. The Nebula app is also closed source.
 
 ## Dependencies
 
