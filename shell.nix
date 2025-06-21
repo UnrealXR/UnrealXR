@@ -3,8 +3,11 @@
 }: pkgs.mkShell {
   buildInputs = with pkgs; [
     # Runtime dependencies
-    python3
     pciutils
+
+    # UnrealXR build dependencies
+    go
+    gopls
 
     # evdi build dependencies
     libdrm
@@ -37,11 +40,5 @@
     mkdir -p "$PWD/data/config" "$PWD/data/data"
     export UNREALXR_CONFIG_PATH="$PWD/data/config"
     export UNREALXR_DATA_PATH="$PWD/data/data"
-
-    if [ ! -d ".venv" ]; then
-      python3 -m venv .venv
-    fi
-
-    source .venv/bin/activate
   '';
 }
