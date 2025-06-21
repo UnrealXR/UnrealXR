@@ -21,7 +21,7 @@ import libunreal
 
 default_configuration: dict[str, str | int] = {
     "display_angle": 45,
-    "display_pixel_spacing": 45,
+    "display_spacing": 1,
     "display_count": 3,
     "allow_unsupported_devices": False,
     "allow_unsupported_vendors": False,
@@ -164,7 +164,7 @@ def main():
 
     # Raylib gets confused if there's multiple dri devices so we initialize the window before anything
     logger.info("Initializing XR headset")
-    pyray.set_target_fps(edid.max_refresh_rate)
+    pyray.set_target_fps(edid.max_refresh_rate*2) # we need more headroom...
     pyray.init_window(edid.max_width, edid.max_height, "UnrealXR")
 
     logger.info("Initializing virtual displays")
@@ -181,7 +181,7 @@ def main():
         atexit.register(lambda: card.close())
 
     logger.info("Initialized displays. Entering rendering loop")
-    render_loop(edid, cards)
+    render_loop(edid, configuration, cards)
 
 if __name__ == "__main__":
     print("Welcome to UnrealXR!\n")
