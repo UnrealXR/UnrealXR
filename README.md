@@ -22,7 +22,7 @@ UnrealXR is a spatial multi-display renderer for the Xreal line of devices, enab
 
 Before anything, this depends on the `evdi` Linux kernel module. This is packaged in Debian-based distributions as `evdi-dkms`. If you already have DisplayLink drivers installed for their devices, you likely do not need to do this step. After installing this, please reboot your computer.
 
-You'll need to install build dependencies after this. For Debian-based distros, the dependency list should be: `git golang build-essential libdrm libdrm-dev linux-headers-$(uname -r) cmake clang-tools pkg-config libwayland-client++1 libgl1-mesa-dev libglu1-mesa-dev libwayland-dev libxkbcommon-dev libhidapi-dev libjson-c-dev	libudev-dev libusb-1.0-0	libusb-1.0-0-dev libopencv-dev`
+You'll need to install build dependencies after this. For Debian-based distros, the dependency list should be: `git golang build-essential libdrm libdrm-dev linux-headers-$(uname -r) cmake clang-tools pkg-config libwayland-client++1 libgl1-mesa-dev libglu1-mesa-dev libwayland-dev libxkbcommon-dev libhidapi-dev libjson-c-dev	libudev-dev libusb-1.0-0 libusb-1.0-0-dev libopencv-dev`
 
 If you're using Nix/NixOS, all you need to do is use `nix-shell` to enter the development environment.
 

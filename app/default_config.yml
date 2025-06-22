@@ -1,0 +1,18 @@
+#      __  __                      ___  __ ____
+#     / / / /___  ________  ____ _/ / |/ // __ \
+#    / / / / __ \/ ___/ _ \/ __ `/ /|   // /_/ /
+#   / /_/ / / / / /  /  __/ /_/ / //   |/ _, _/
+#   \____/_/ /_/_/   \___/\__,_/_//_/|_/_/ |_|
+#
+# Welcome to UnrealXR! This is the configuration file to configure various UnrealXR settings.
+
+display:
+  angle: 45 # Angle of the virtual displays
+  fov: 45 # FOV of the 3D camera
+  spacing: 1 # Spacing between virtual displays
+  count: 3 # Count of virtual displays
+overrides:
+  allow_unsupported_devices: false # If true, allows unsupported devices to be used as long as they're a compatible vendor (Xreal)
+  # width: 1920 # If set, overrides the width of the screen and virtual displays
+  # height: 1080 # If set, overrides the height of the screen and virtual displays
+  # refresh_rate: 120 # If set, overrides the refresh rate of the screen and the maximum refresh rate of the virtual displays
