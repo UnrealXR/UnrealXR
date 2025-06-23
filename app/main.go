@@ -1,11 +1,15 @@
 package main
 
 import (
+	"bufio"
 	"context"
 	"fmt"
 	"os"
 	"path"
 
+	libconfig "git.terah.dev/UnrealXR/unrealxr/app/config"
+	"git.terah.dev/UnrealXR/unrealxr/app/edidtools"
+	"git.terah.dev/UnrealXR/unrealxr/edidpatcher"
 	"github.com/charmbracelet/log"
 	"github.com/goccy/go-yaml"
 	"github.com/kirsle/configdir"
@@ -35,7 +39,7 @@ func mainEntrypoint(context.Context, *cli.Command) error {
 
 	if err != nil {
 		log.Debug("Creating default config file")
-		err := os.WriteFile(path.Join(configDir, "config.yml"), InitialConfig, 0644)
+		err := os.WriteFile(path.Join(configDir, "config.yml"), libconfig.InitialConfig, 0644)
 
 		if err != nil {
 			return fmt.Errorf("failed to create initial config file: %w", err)
@@ -49,14 +53,53 @@ func mainEntrypoint(context.Context, *cli.Command) error {
 		return fmt.Errorf("failed to read config file: %w", err)
 	}
 
-	config := &Config{}
+	config := &libconfig.Config{}
 	err = yaml.Unmarshal(configBytes, config)
 
 	if err != nil {
 		return fmt.Errorf("failed to parse config file: %w", err)
 	}
 
-	InitializePotentiallyMissingConfigValues(config)
+	libconfig.InitializePotentiallyMissingConfigValues(config)
+	log.Info("Attempting to read display EDID file and fetch metadata")
+
+	displayMetadata, err := edidtools.FetchXRGlassEDID(*config.Overrides.AllowUnsupportedDevices)
+
+	if err != nil {
+		return fmt.Errorf("failed to fetch EDID or get metadata: %w", err)
+	}
+
+	log.Info("Got EDID file and metadata")
+	log.Info("Patching EDID firmware to be specialized")
+
+	patchedFirmware, err := edidpatcher.PatchEDIDToBeSpecialized(displayMetadata.EDID)
+
+	if err != nil {
+		return fmt.Errorf("failed to patch EDID firmware: %w", err)
+	}
+
+	log.Info("Uploading patched EDID firmware")
+	err = edidtools.LoadCustomEDIDFirmware(displayMetadata, patchedFirmware)
+
+	if err != nil {
+		return fmt.Errorf("failed to upload patched EDID firmware: %w", err)
+	}
+
+	defer func() {
+		err := edidtools.UnloadCustomEDIDFirmware(displayMetadata)
+
+		if err != nil {
+			log.Errorf("Failed to unload custom EDID firmware: %s", err.Error())
+		}
+
+		log.Info("Please unplug and plug in your XR device to restore it back to normal settings.")
+	}()
+
+	fmt.Print("Press the Enter key to continue loading after you unplug and plug in your XR device.")
+	bufio.NewReader(os.Stdin).ReadBytes('\n') // Wait for Enter key press before continuing
+
+	log.Info("Initializing XR headset")
+
 	return nil
 }
 
@@ -90,6 +133,6 @@ func main() {
 	}
 
 	if err := cmd.Run(context.Background(), os.Args); err != nil {
-		log.Fatal(err)
+		log.Fatalf("Fatal error during execution: %s", err.Error())
 	}
 }
