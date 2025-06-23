@@ -14,6 +14,8 @@ import (
 	"github.com/goccy/go-yaml"
 	"github.com/kirsle/configdir"
 	"github.com/urfave/cli/v3"
+
+	rl "git.terah.dev/UnrealXR/raylib-go/raylib"
 )
 
 func mainEntrypoint(context.Context, *cli.Command) error {
@@ -99,6 +101,20 @@ func mainEntrypoint(context.Context, *cli.Command) error {
 	bufio.NewReader(os.Stdin).ReadBytes('\n') // Wait for Enter key press before continuing
 
 	log.Info("Initializing XR headset")
+
+	rl.InitWindow(800, 450, "raylib [core] example - basic window")
+	defer rl.CloseWindow()
+
+	rl.SetTargetFPS(60)
+
+	for !rl.WindowShouldClose() {
+		rl.BeginDrawing()
+
+		rl.ClearBackground(rl.RayWhite)
+		rl.DrawText("Congrats! You created your first window!", 190, 200, 20, rl.LightGray)
+
+		rl.EndDrawing()
+	}
 
 	return nil
 }

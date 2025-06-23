@@ -28,4 +28,4 @@ If you're using Nix/NixOS, all you need to do is use `nix-shell` to enter the de
 
 ## Building
 
-TODO.
+Just run `make` in the root directory.
