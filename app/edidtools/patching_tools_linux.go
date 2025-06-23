@@ -73,7 +73,7 @@ func FetchXRGlassEDID(allowUnsupportedDevices bool) (*DisplayMetadata, error) {
 					}
 				} else {
 					parsedEDID.LinuxDRMCard = cardDevice.Name()
-					parsedEDID.LinuxDRMConnector = strings.Replace(cardDevice.Name(), cardDevice.Name()+"-", "", 1)
+					parsedEDID.LinuxDRMConnector = strings.Replace(monitor.Name(), cardDevice.Name()+"-", "", 1)
 
 					return parsedEDID, nil
 				}
@@ -90,7 +90,7 @@ func LoadCustomEDIDFirmware(displayMetadata *DisplayMetadata, edidFirmware []byt
 		return fmt.Errorf("missing Linux DRM card or connector information")
 	}
 
-	drmFile, err := os.Open("/sys/kernel/debug/dri/" + strings.Replace(displayMetadata.LinuxDRMCard, "card", "", 1) + "/" + displayMetadata.LinuxDRMConnector + "/edid_override")
+	drmFile, err := os.OpenFile("/sys/kernel/debug/dri/"+strings.Replace(displayMetadata.LinuxDRMCard, "card", "", 1)+"/"+displayMetadata.LinuxDRMConnector+"/edid_override", os.O_WRONLY, 0644)
 
 	if err != nil {
 		return fmt.Errorf("failed to open EDID override file for monitor '%s': %w", displayMetadata.LinuxDRMConnector, err)
@@ -111,7 +111,7 @@ func UnloadCustomEDIDFirmware(displayMetadata *DisplayMetadata) error {
 		return fmt.Errorf("missing Linux DRM card or connector information")
 	}
 
-	drmFile, err := os.Open("/sys/kernel/debug/dri/" + strings.Replace(displayMetadata.LinuxDRMCard, "card", "", 1) + "/" + displayMetadata.LinuxDRMConnector + "/edid_override")
+	drmFile, err := os.OpenFile("/sys/kernel/debug/dri/"+strings.Replace(displayMetadata.LinuxDRMCard, "card", "", 1)+"/"+displayMetadata.LinuxDRMConnector+"/edid_override", os.O_WRONLY, 0644)
 
 	if err != nil {
 		return fmt.Errorf("failed to open EDID override file for monitor '%s': %w", displayMetadata.LinuxDRMConnector, err)
