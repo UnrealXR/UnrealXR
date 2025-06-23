@@ -13,6 +13,6 @@ display:
   count: 3 # Count of virtual displays
 overrides:
   allow_unsupported_devices: false # If true, allows unsupported devices to be used as long as they're a compatible vendor (Xreal)
-  # width: 1920 # If set, overrides the width of the screen and virtual displays
-  # height: 1080 # If set, overrides the height of the screen and virtual displays
-  # refresh_rate: 120 # If set, overrides the refresh rate of the screen and the maximum refresh rate of the virtual displays
+  # width: 1920 # If set, overrides the width of the screen and virtual displays. This does not do any overclocking.
+  # height: 1080 # If set, overrides the height of the screen and virtual displays. This does not do any overclocking.
+  # refresh_rate: 120 # If set, overrides the refresh rate of the screen and the maximum refresh rate of the virtual displays. This does not do any overclocking.
