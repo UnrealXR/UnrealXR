@@ -5,20 +5,36 @@ import (
 	"context"
 	"fmt"
 	"os"
+	"os/signal"
 	"path"
+	"syscall"
 
 	libconfig "git.terah.dev/UnrealXR/unrealxr/app/config"
 	"git.terah.dev/UnrealXR/unrealxr/app/edidtools"
+	"git.terah.dev/UnrealXR/unrealxr/app/renderer"
 	"git.terah.dev/UnrealXR/unrealxr/edidpatcher"
+	"git.terah.dev/imterah/goevdi/libevdi"
 	"github.com/charmbracelet/log"
 	"github.com/goccy/go-yaml"
 	"github.com/kirsle/configdir"
+	"github.com/tebeka/atexit"
 	"github.com/urfave/cli/v3"
 
 	rl "git.terah.dev/UnrealXR/raylib-go/raylib"
 )
 
 func mainEntrypoint(context.Context, *cli.Command) error {
+	// Allow for clean exits
+	c := make(chan os.Signal, 1)
+	signal.Notify(c, os.Interrupt, syscall.SIGTERM)
+
+	go func() {
+		<-c
+		log.Info("Exiting...")
+		atexit.Exit(1)
+	}()
+
+	// TODO: add built-in privesc
 	if os.Geteuid() != 0 {
 		return fmt.Errorf("this program must be run as root")
 	}
@@ -63,7 +79,7 @@ func mainEntrypoint(context.Context, *cli.Command) error {
 	}
 
 	libconfig.InitializePotentiallyMissingConfigValues(config)
-	log.Info("Attempting to read display EDID file and fetch metadata")
+	log.Debug("Attempting to read display EDID file and fetch metadata")
 
 	displayMetadata, err := edidtools.FetchXRGlassEDID(*config.Overrides.AllowUnsupportedDevices)
 
@@ -71,8 +87,8 @@ func mainEntrypoint(context.Context, *cli.Command) error {
 		return fmt.Errorf("failed to fetch EDID or get metadata: %w", err)
 	}
 
-	log.Info("Got EDID file and metadata")
-	log.Info("Patching EDID firmware to be specialized")
+	log.Debug("Got EDID file and metadata")
+	log.Debug("Patching EDID firmware to be specialized")
 
 	patchedFirmware, err := edidpatcher.PatchEDIDToBeSpecialized(displayMetadata.EDID)
 
@@ -87,7 +103,7 @@ func mainEntrypoint(context.Context, *cli.Command) error {
 		return fmt.Errorf("failed to upload patched EDID firmware: %w", err)
 	}
 
-	defer func() {
+	atexit.Register(func() {
 		err := edidtools.UnloadCustomEDIDFirmware(displayMetadata)
 
 		if err != nil {
@@ -95,27 +111,59 @@ func mainEntrypoint(context.Context, *cli.Command) error {
 		}
 
 		log.Info("Please unplug and plug in your XR device to restore it back to normal settings.")
-	}()
+	})
 
 	fmt.Print("Press the Enter key to continue loading after you unplug and plug in your XR device.")
 	bufio.NewReader(os.Stdin).ReadBytes('\n') // Wait for Enter key press before continuing
 
 	log.Info("Initializing XR headset")
+	rl.SetTargetFPS(int32(displayMetadata.MaxRefreshRate * 2))
+	rl.InitWindow(int32(displayMetadata.MaxWidth), int32(displayMetadata.MaxHeight), "UnrealXR")
 
-	rl.InitWindow(800, 450, "raylib [core] example - basic window")
-	defer rl.CloseWindow()
+	atexit.Register(func() {
+		rl.CloseWindow()
+	})
 
-	rl.SetTargetFPS(60)
+	log.Info("Initializing virtual displays")
 
-	for !rl.WindowShouldClose() {
-		rl.BeginDrawing()
+	libevdi.SetupLogger(&libevdi.EvdiLogger{
+		Log: func(msg string) {
+			log.Debugf("EVDI: %s", msg)
+		},
+	})
 
-		rl.ClearBackground(rl.RayWhite)
-		rl.DrawText("Congrats! You created your first window!", 190, 200, 20, rl.LightGray)
+	displayMetadataBlock := make([]*renderer.EvdiDisplayMetadata, *config.DisplayConfig.Count)
 
-		rl.EndDrawing()
+	for currentDisplay := range *config.DisplayConfig.Count {
+		openedDevice, err := libevdi.Open(nil)
+
+		if err != nil {
+			log.Errorf("Failed to open EVDI device: %s", err.Error())
+		}
+
+		openedDevice.Connect(displayMetadata.EDID, uint(displayMetadata.MaxWidth), uint(displayMetadata.MaxHeight), uint(displayMetadata.MaxRefreshRate))
+
+		atexit.Register(func() {
+			openedDevice.Disconnect()
+		})
+
+		displayRect := &libevdi.EvdiDisplayRect{
+			X1: 0,
+			Y1: 0,
+			X2: displayMetadata.MaxWidth,
+			Y2: displayMetadata.MaxHeight,
+		}
+
+		displayBuffer := openedDevice.CreateBuffer(displayMetadata.MaxWidth, displayMetadata.MaxHeight, 4, displayRect)
+
+		displayMetadataBlock[currentDisplay] = &renderer.EvdiDisplayMetadata{
+			EvdiNode: openedDevice,
+			Rect:     displayRect,
+			Buffer:   displayBuffer,
+		}
 	}
 
+	atexit.Exit(0)
 	return nil
 }
 

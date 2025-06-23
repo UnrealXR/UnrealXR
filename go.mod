@@ -4,7 +4,7 @@ go 1.24.3
 
 require (
 	git.terah.dev/UnrealXR/raylib-go/raylib v0.55.2-0.20250623002739-1468af2636e1 // indirect
-	git.terah.dev/imterah/goevdi v0.0.0-20250211014657-96d98ad0735c // indirect
+	git.terah.dev/imterah/goevdi v1.14.10 // indirect
 	github.com/anoopengineer/edidparser v0.0.0-20240602223913-86ca9ed3d2b0 // indirect
 	github.com/aymanbagabas/go-osc52/v2 v2.0.1 // indirect
 	github.com/charmbracelet/colorprofile v0.2.3-0.20250311203215-f60798e515dc // indirect
@@ -23,6 +23,7 @@ require (
 	github.com/mattn/go-runewidth v0.0.16 // indirect
 	github.com/muesli/termenv v0.16.0 // indirect
 	github.com/rivo/uniseg v0.4.7 // indirect
+	github.com/tebeka/atexit v0.3.0 // indirect
 	github.com/urfave/cli/v3 v3.3.8 // indirect
 	github.com/xo/terminfo v0.0.0-20220910002029-abceb7e1c41e // indirect
 	golang.org/x/exp v0.0.0-20250620022241-b7579e27df2b // indirect
