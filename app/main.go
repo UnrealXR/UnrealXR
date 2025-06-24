@@ -132,7 +132,7 @@ func mainEntrypoint(context.Context, *cli.Command) error {
 		},
 	})
 
-	displayMetadataBlock := make([]*renderer.EvdiDisplayMetadata, *config.DisplayConfig.Count)
+	evdiCards := make([]*renderer.EvdiDisplayMetadata, *config.DisplayConfig.Count)
 
 	for currentDisplay := range *config.DisplayConfig.Count {
 		openedDevice, err := libevdi.Open(nil)
@@ -156,12 +156,15 @@ func mainEntrypoint(context.Context, *cli.Command) error {
 
 		displayBuffer := openedDevice.CreateBuffer(displayMetadata.MaxWidth, displayMetadata.MaxHeight, 4, displayRect)
 
-		displayMetadataBlock[currentDisplay] = &renderer.EvdiDisplayMetadata{
+		evdiCards[currentDisplay] = &renderer.EvdiDisplayMetadata{
 			EvdiNode: openedDevice,
 			Rect:     displayRect,
 			Buffer:   displayBuffer,
 		}
 	}
+
+	log.Info("Initialized displays. Entering rendering loop")
+	renderer.EnterRenderLoop(config, displayMetadata, evdiCards)
 
 	atexit.Exit(0)
 	return nil
