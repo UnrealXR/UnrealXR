@@ -122,11 +122,6 @@ func EnterRenderLoop(config *libconfig.Config, displayMetadata *edidtools.Displa
 		rl.CameraPerspective,
 	)
 
-	// Disable front and back face culling. It caused issues involving the entire virtual display dissappearing
-	// If this issue still happens I *am* going to cry
-	rl.DisableBackfaceCulling()
-	rl.DisableDepthTest()
-
 	horizontalSize := findOptimalHorizontalRes(float32(displayMetadata.MaxHeight), float32(displayMetadata.MaxWidth), verticalSize)
 	coreMesh := rl.GenMeshPlane(horizontalSize, verticalSize, 1, 1)
 
