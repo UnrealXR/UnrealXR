@@ -8,6 +8,7 @@ import (
 	"os/signal"
 	"path"
 	"syscall"
+	"time"
 
 	libconfig "git.terah.dev/UnrealXR/unrealxr/app/config"
 	"git.terah.dev/UnrealXR/unrealxr/app/edidtools"
@@ -154,14 +155,27 @@ func mainEntrypoint(context.Context, *cli.Command) error {
 			Y2: displayMetadata.MaxHeight,
 		}
 
-		displayBuffer := openedDevice.CreateBuffer(displayMetadata.MaxWidth, displayMetadata.MaxHeight, 4, displayRect)
+		displayBuffer := openedDevice.CreateBuffer(displayMetadata.MaxWidth, displayMetadata.MaxHeight, libevdi.StridePixelFormatRGBA32, displayRect)
 
-		evdiCards[currentDisplay] = &renderer.EvdiDisplayMetadata{
-			EvdiNode: openedDevice,
-			Rect:     displayRect,
-			Buffer:   displayBuffer,
+		displayMetadata := &renderer.EvdiDisplayMetadata{
+			EvdiNode:            openedDevice,
+			Rect:                displayRect,
+			Buffer:              displayBuffer,
+			ShouldRequestUpdate: true,
 		}
+
+		displayMetadata.EventContext = &libevdi.EvdiEventContext{
+			UpdateReadyHandler: func(bufferToBeUpdated int) {
+				displayMetadata.IsUpdateReady = true
+			},
+		}
+
+		openedDevice.RegisterEventHandler(displayMetadata.EventContext)
+		evdiCards[currentDisplay] = displayMetadata
 	}
+
+	// HACK: sometimes the buffer doesn't get initialized properly if we don't wait a bit...
+	time.Sleep(time.Millisecond * 100)
 
 	log.Info("Initialized displays. Entering rendering loop")
 	renderer.EnterRenderLoop(config, displayMetadata, evdiCards)
