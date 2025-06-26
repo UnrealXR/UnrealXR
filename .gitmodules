@@ -1,9 +1,0 @@
-[submodule "modules/raylib-python-cffi"]
-	path = modules/raylib-python-cffi
-	url = https://git.terah.dev/UnrealXR/raylib-python-cffi.git
-[submodule "modules/evdi"]
-	path = modules/evdi
-	url = https://github.com/DisplayLink/evdi.git
-[submodule "modules/nreal-driver"]
-	path = modules/nreal-driver
-	url = https://git.terah.dev/UnrealXR/nrealAirLinuxDriver.git
