@@ -1,5 +1,5 @@
 APP_DIR := ./app
-OUTPUT := uxr
+OUTPUT := ./uxr
 TAGS := xreal noaudio drm drm_leasing drm_disable_input
 
 .PHONY: all build clean
@@ -7,7 +7,7 @@ TAGS := xreal noaudio drm drm_leasing drm_disable_input
 all: build
 
 build:
-	go build -v -tags '$(TAGS)' -o $(OUTPUT) $(APP_DIR)
+	cd $(APP_DIR) && go build -v -tags '$(TAGS)' -o ../$(OUTPUT) .
 
 clean:
 	rm -f $(OUTPUT)

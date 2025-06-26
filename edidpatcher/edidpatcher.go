@@ -3,7 +3,6 @@ package edidpatcher
 import (
 	"fmt"
 
-	"github.com/charmbracelet/log"
 	"github.com/google/uuid"
 )
 
@@ -38,7 +37,7 @@ func PatchEDIDToBeSpecialized(edid []byte) ([]byte, error) {
 			}
 
 			if newEDID[currentExtensionPosition+1] != 0x03 {
-				log.Warn("Incompatible version detected for ANSI CTA data section in EDID")
+				fmt.Println("WARN: Incompatible version detected for ANSI CTA data section in EDID")
 			}
 
 			foundExtensionBase = currentExtensionPosition
