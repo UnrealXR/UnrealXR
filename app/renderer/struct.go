@@ -5,8 +5,8 @@ import (
 )
 
 type EvdiDisplayMetadata struct {
-	EvdiNode            *libevdi.EvdiNode
-	Rect                *libevdi.EvdiDisplayRect
-	Buffer              *libevdi.EvdiBuffer
-	EventContext        *libevdi.EvdiEventContext
+	EvdiNode     *libevdi.EvdiNode
+	Rect         *libevdi.EvdiDisplayRect
+	Buffer       *libevdi.EvdiBuffer
+	EventContext *libevdi.EvdiEventContext
 }

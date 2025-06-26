@@ -155,7 +155,13 @@ func mainEntrypoint(context.Context, *cli.Command) error {
 			Y2: displayMetadata.MaxHeight,
 		}
 
-		displayBuffer := openedDevice.CreateBuffer(displayMetadata.MaxWidth, displayMetadata.MaxHeight, libevdi.StridePixelFormatRGBA32, displayRect)
+		displayBuffer, err := openedDevice.CreateBuffer(displayMetadata.MaxWidth, displayMetadata.MaxHeight, libevdi.StridePixelFormatRGBA32, displayRect)
+
+		if err != nil {
+			log.Errorf("Failed to create buffer for display %d: %s", currentDisplay, err.Error())
+			atexit.Exit(1)
+			return nil
+		}
 
 		displayMetadata := &renderer.EvdiDisplayMetadata{
 			EvdiNode: openedDevice,

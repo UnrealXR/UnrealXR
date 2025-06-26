@@ -9,7 +9,7 @@
 display:
   angle: 45 # Angle of the virtual displays
   fov: 45 # FOV of the 3D camera
-  spacing: 1 # Spacing between virtual displays
+  spacing: 0.5 # Spacing between virtual displays
   count: 3 # Count of virtual displays
 overrides:
   allow_unsupported_devices: false # If true, allows unsupported devices to be used as long as they're a compatible vendor (Xreal)

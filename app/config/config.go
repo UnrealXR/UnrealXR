@@ -6,10 +6,10 @@ import _ "embed"
 var InitialConfig []byte
 
 type DisplayConfig struct {
-	Angle   *int `yaml:"angle"`
-	FOV     *int `yaml:"fov"`
-	Spacing *int `yaml:"spacing"`
-	Count   *int `yaml:"count"`
+	Angle   *int     `yaml:"angle"`
+	FOV     *int     `yaml:"fov"`
+	Spacing *float32 `yaml:"spacing"`
+	Count   *int     `yaml:"count"`
 }
 
 type AppOverrides struct {
@@ -28,6 +28,10 @@ func getPtrToInt(int int) *int {
 	return &int
 }
 
+func getPtrToFloat32(float32 float32) *float32 {
+	return &float32
+}
+
 func getPtrToBool(bool bool) *bool {
 	return &bool
 }
@@ -36,7 +40,7 @@ var DefaultConfig = &Config{
 	DisplayConfig: DisplayConfig{
 		Angle:   getPtrToInt(45),
 		FOV:     getPtrToInt(45),
-		Spacing: getPtrToInt(1),
+		Spacing: getPtrToFloat32(0.5),
 		Count:   getPtrToInt(3),
 	},
 	Overrides: AppOverrides{

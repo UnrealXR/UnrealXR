@@ -17,8 +17,10 @@ import (
 )
 
 type TextureModelPair struct {
-	Texture rl.Texture2D
-	Model   rl.Model
+	Texture               rl.Texture2D
+	Model                 rl.Model
+	CurrentAngle          float32
+	CurrentDisplaySpacing float32
 }
 
 func findMaxVerticalSize(fovyDeg float32, distance float32) float32 {
@@ -125,7 +127,8 @@ func EnterRenderLoop(config *libconfig.Config, displayMetadata *edidtools.Displa
 	rl.DisableBackfaceCulling()
 	rl.DisableDepthTest()
 
-	coreMesh := rl.GenMeshPlane(findOptimalHorizontalRes(float32(displayMetadata.MaxHeight), float32(displayMetadata.MaxWidth), verticalSize), verticalSize, 1, 1)
+	horizontalSize := findOptimalHorizontalRes(float32(displayMetadata.MaxHeight), float32(displayMetadata.MaxWidth), verticalSize)
+	coreMesh := rl.GenMeshPlane(horizontalSize, verticalSize, 1, 1)
 
 	movementVector := rl.Vector3{
 		X: 0.0,
@@ -156,7 +159,18 @@ func EnterRenderLoop(config *libconfig.Config, displayMetadata *edidtools.Displa
 
 	rects := make([]*TextureModelPair, len(evdiCards))
 
+	displayAngle := float32(*config.DisplayConfig.Angle)
+	displaySpacing := *config.DisplayConfig.Spacing + horizontalSize
+
+	highestPossibleAngleOnBothSides := float32((*config.DisplayConfig.Count)-1) * displayAngle
+	highestPossibleDisplaySpacingOnBothSides := float32((*config.DisplayConfig.Count)-1) * displaySpacing
+
 	for i, card := range evdiCards {
+		currentAngle := (-highestPossibleAngleOnBothSides) + (displayAngle * float32(i+1))
+		currentDisplaySpacing := (-highestPossibleDisplaySpacingOnBothSides) + (displaySpacing * float32(i+1))
+
+		log.Debugf("display #%d: currentAngle=%f, currentDisplaySpacing=%f", i, currentAngle, currentDisplaySpacing)
+
 		image := rl.NewImage(card.Buffer.Buffer, int32(displayMetadata.MaxWidth), int32(displayMetadata.MaxHeight), 1, rl.UncompressedR8g8b8a8)
 
 		texture := rl.LoadTextureFromImage(image)
@@ -165,8 +179,10 @@ func EnterRenderLoop(config *libconfig.Config, displayMetadata *edidtools.Displa
 		rl.SetMaterialTexture(model.Materials, rl.MapAlbedo, texture)
 
 		rects[i] = &TextureModelPair{
-			Texture: texture,
-			Model:   model,
+			Texture:               texture,
+			Model:                 model,
+			CurrentAngle:          currentAngle,
+			CurrentDisplaySpacing: currentDisplaySpacing,
 		}
 	}
 
@@ -200,13 +216,13 @@ func EnterRenderLoop(config *libconfig.Config, displayMetadata *edidtools.Displa
 
 			if err != nil {
 				log.Errorf("Failed to wait for display events: %s", err.Error())
-				break
+				continue
 			}
 
 			if ready {
 				if err := card.EvdiNode.HandleEvents(card.EventContext); err != nil {
 					log.Errorf("Failed to handle display events: %s", err.Error())
-					break
+					continue
 				}
 
 				card.EvdiNode.GrabPixels(card.Rect)
@@ -223,7 +239,7 @@ func EnterRenderLoop(config *libconfig.Config, displayMetadata *edidtools.Displa
 			rl.DrawModelEx(
 				rect.Model,
 				rl.Vector3{
-					X: 0,
+					X: rect.CurrentDisplaySpacing,
 					Y: verticalSize / 2,
 					Z: 0,
 				},
@@ -241,8 +257,6 @@ func EnterRenderLoop(config *libconfig.Config, displayMetadata *edidtools.Displa
 				},
 				rl.White,
 			)
-
-			break
 		}
 
 		rl.EndMode3D()
