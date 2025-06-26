@@ -9,6 +9,4 @@ type EvdiDisplayMetadata struct {
 	Rect                *libevdi.EvdiDisplayRect
 	Buffer              *libevdi.EvdiBuffer
 	EventContext        *libevdi.EvdiEventContext
-	ShouldRequestUpdate bool
-	IsUpdateReady       bool
 }

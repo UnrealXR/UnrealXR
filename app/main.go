@@ -158,19 +158,14 @@ func mainEntrypoint(context.Context, *cli.Command) error {
 		displayBuffer := openedDevice.CreateBuffer(displayMetadata.MaxWidth, displayMetadata.MaxHeight, libevdi.StridePixelFormatRGBA32, displayRect)
 
 		displayMetadata := &renderer.EvdiDisplayMetadata{
-			EvdiNode:            openedDevice,
-			Rect:                displayRect,
-			Buffer:              displayBuffer,
-			ShouldRequestUpdate: true,
+			EvdiNode: openedDevice,
+			Rect:     displayRect,
+			Buffer:   displayBuffer,
 		}
 
-		displayMetadata.EventContext = &libevdi.EvdiEventContext{
-			UpdateReadyHandler: func(bufferToBeUpdated int) {
-				displayMetadata.IsUpdateReady = true
-			},
-		}
-
+		displayMetadata.EventContext = &libevdi.EvdiEventContext{}
 		openedDevice.RegisterEventHandler(displayMetadata.EventContext)
+
 		evdiCards[currentDisplay] = displayMetadata
 	}
 
