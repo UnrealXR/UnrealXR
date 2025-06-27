@@ -41,5 +41,6 @@
     mkdir -p "$PWD/data/config" "$PWD/data/data"
     export UNREALXR_CONFIG_PATH="$PWD/data/config"
     export UNREALXR_DATA_PATH="$PWD/data/data"
+    export UNREALXR_LOG_LEVEL="debug"
   '';
 }
