@@ -1,5 +1,5 @@
-//go:build windows
-// +build windows
+//go:build windows && !fake_edid_patching
+// +build windows,!fake_edid_patching
 
 package edidtools
 

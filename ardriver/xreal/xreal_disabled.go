@@ -35,9 +35,7 @@ func (device *XrealDevice) Poll() error {
 	return fmt.Errorf("xreal is not enabled")
 }
 
-func (device *XrealDevice) RegisterEventListeners(*commons.AREventListener) error {
-	return fmt.Errorf("xreal is not enabled")
-}
+func (device *XrealDevice) RegisterEventListeners(*commons.AREventListener) {}
 
 func New() (*XrealDevice, error) {
 	return nil, fmt.Errorf("xreal is not enabled")

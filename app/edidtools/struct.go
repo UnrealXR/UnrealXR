@@ -1,11 +1,12 @@
 package edidtools
 
 type DisplayQuirks struct {
-	MaxWidth        int
-	MaxHeight       int
-	MaxRefreshRate  int
-	SensorInitDelay int
-	ZVectorDisabled bool
+	MaxWidth          int
+	MaxHeight         int
+	MaxRefreshRate    int
+	SensorInitDelay   int
+	ZVectorDisabled   bool
+	UsesMouseMovement bool
 }
 
 type DisplayMetadata struct {

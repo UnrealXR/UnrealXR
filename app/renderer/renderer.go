@@ -184,20 +184,24 @@ func EnterRenderLoop(config *libconfig.Config, displayMetadata *edidtools.Displa
 	eventTimeoutDuration := 0 * time.Millisecond
 
 	for !rl.WindowShouldClose() {
-		if hasSensorInitDelayQuirk {
-			if time.Now().Sub(sensorInitStartTime) > time.Duration(displayMetadata.DeviceQuirks.SensorInitDelay)*time.Second {
-				log.Info("Movement is now enabled.")
-				hasSensorInitDelayQuirk = false
+		if !displayMetadata.DeviceQuirks.UsesMouseMovement {
+			if hasSensorInitDelayQuirk {
+				if time.Now().Sub(sensorInitStartTime) > time.Duration(displayMetadata.DeviceQuirks.SensorInitDelay)*time.Second {
+					log.Info("Movement is now enabled.")
+					hasSensorInitDelayQuirk = false
+				}
+			} else {
+				lookVector.X = (currentYaw - previousYaw) * 6.5
+				lookVector.Y = -(currentPitch - previousPitch) * 6.5
+
+				if !hasZVectorDisabledQuirk {
+					lookVector.Z = (currentRoll - previousRoll) * 6.5
+				}
+
+				rl.UpdateCameraPro(&camera, movementVector, lookVector, 0)
 			}
 		} else {
-			lookVector.X = (currentYaw - previousYaw) * 6.5
-			lookVector.Y = -(currentPitch - previousPitch) * 6.5
-
-			if !hasZVectorDisabledQuirk {
-				lookVector.Z = (currentRoll - previousRoll) * 6.5
-			}
-
-			rl.UpdateCameraPro(&camera, movementVector, lookVector, 0)
+			rl.UpdateCamera(&camera, rl.CameraFirstPerson)
 		}
 
 		rl.BeginDrawing()

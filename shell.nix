@@ -27,12 +27,13 @@
     xorg.libXinerama
     xorg.libX11
 
+    # raylib X11 build dependencies (for dev-only non-XR builds)
+    libxkbcommon
+
     # nreal driver build dependencies
     hidapi
     json_c
-    udev
     libusb1
-    opencv
   ];
 
   shellHook = ''

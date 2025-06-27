@@ -9,5 +9,8 @@ all: build
 build:
 	cd $(APP_DIR) && go build -v -tags '$(TAGS)' -o ../$(OUTPUT) .
 
+dev:
+	cd $(APP_DIR) && go build -v -tags 'noaudio dummy_ar fake_edid_patching' -o ../$(OUTPUT) .
+
 clean:
 	rm -f $(OUTPUT)

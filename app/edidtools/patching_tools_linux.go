@@ -1,5 +1,5 @@
-//go:build linux
-// +build linux
+//go:build linux && !fake_edid_patching
+// +build linux,!fake_edid_patching
 
 package edidtools
 
