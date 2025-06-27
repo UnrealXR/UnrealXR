@@ -118,7 +118,7 @@ func mainEntrypoint(context.Context, *cli.Command) error {
 	bufio.NewReader(os.Stdin).ReadBytes('\n') // Wait for Enter key press before continuing
 
 	log.Info("Initializing XR headset")
-	rl.SetTargetFPS(int32(displayMetadata.MaxRefreshRate * 2))
+	rl.SetTargetFPS(int32(displayMetadata.MaxRefreshRate))
 	rl.InitWindow(int32(displayMetadata.MaxWidth), int32(displayMetadata.MaxHeight), "UnrealXR")
 
 	atexit.Register(func() {
