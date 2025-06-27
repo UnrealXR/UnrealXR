@@ -33,3 +33,7 @@ If you're using Nix/NixOS, all you need to do is use `nix-shell` to enter the de
 ## Building
 
 Just run `make` in the root directory.
+
+## Development Guide
+
+See [HACKING.md](https://git.terah.dev/UnrealXR/unrealxr/src/branch/main/HACKING.md).
