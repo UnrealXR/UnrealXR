@@ -6,10 +6,12 @@ import _ "embed"
 var InitialConfig []byte
 
 type DisplayConfig struct {
-	Angle   *int     `yaml:"angle"`
-	FOV     *int     `yaml:"fov"`
-	Spacing *float32 `yaml:"spacing"`
-	Count   *int     `yaml:"count"`
+	Angle              *int     `yaml:"angle"`
+	FOV                *int     `yaml:"fov"`
+	Spacing            *float32 `yaml:"spacing"`
+	RadiusMultiplier   *float32 `yaml:"circle_radius_multiplier"`
+	UseCircularSpacing *bool    `yaml:"use_circular_spacing"`
+	Count              *int     `yaml:"count"`
 }
 
 type AppOverrides struct {
@@ -38,10 +40,12 @@ func getPtrToBool(bool bool) *bool {
 
 var DefaultConfig = &Config{
 	DisplayConfig: DisplayConfig{
-		Angle:   getPtrToInt(45),
-		FOV:     getPtrToInt(45),
-		Spacing: getPtrToFloat32(0.5),
-		Count:   getPtrToInt(3),
+		Angle:              getPtrToInt(45),
+		FOV:                getPtrToInt(45),
+		Spacing:            getPtrToFloat32(0.5),
+		RadiusMultiplier:   getPtrToFloat32(2),
+		UseCircularSpacing: getPtrToBool(true),
+		Count:              getPtrToInt(3),
 	},
 	Overrides: AppOverrides{
 		AllowUnsupportedDevices: getPtrToBool(false),

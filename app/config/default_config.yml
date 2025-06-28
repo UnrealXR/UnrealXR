@@ -9,7 +9,9 @@
 display:
   angle: 45 # Angle of the virtual displays
   fov: 45 # FOV of the 3D camera
-  spacing: 0.5 # Spacing between virtual displays
+  spacing: 0.5 # Raw spacing between virtual displays. Does not use circles in the layout. Purely flat plane.
+  circle_radius_multiplier: 2 # Multiplier for the radius of the circle used to calculate the spacing between virtual displays. "Rounded" plane of sorts.
+  use_circular_spacing: true # If true, uses a circular layout for the virtual displays.
   count: 3 # Count of virtual displays
 overrides:
   allow_unsupported_devices: false # If true, allows unsupported devices to be used as long as they're a compatible vendor (Xreal)
