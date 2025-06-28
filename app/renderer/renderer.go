@@ -235,6 +235,24 @@ func EnterRenderLoop(config *libconfig.Config, displayMetadata *edidtools.Displa
 					lookVector.Z = (currentRoll - previousRoll) * 6.5
 				}
 
+				// evil look hacks to not randomly explode
+				maxTrustedSize := float64(7)
+
+				if math.Abs(float64(lookVector.X)) > maxTrustedSize {
+					log.Errorf("WOAH. Ignoring extreme camera movement for vector X: %.02f", lookVector.X)
+					lookVector.X = 0
+				}
+
+				if math.Abs(float64(lookVector.Y)) > maxTrustedSize {
+					log.Errorf("WOAH. Ignoring extreme camera movement for vector Y: %.02f", lookVector.Y)
+					lookVector.Y = 0
+				}
+
+				if !hasZVectorDisabledQuirk && math.Abs(float64(lookVector.Z)) > maxTrustedSize {
+					log.Errorf("WOAH. Ignoring extreme camera movement for vector Z: %.02f", lookVector.Z)
+					lookVector.Z = 0
+				}
+
 				rl.UpdateCameraPro(&camera, movementVector, lookVector, 0)
 			}
 		} else {
