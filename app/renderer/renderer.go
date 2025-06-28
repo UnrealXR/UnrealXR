@@ -35,6 +35,15 @@ func findOptimalHorizontalRes(verticalDisplayRes float32, horizontalDisplayRes f
 	return horizontalSize
 }
 
+func findHfovFromVfov(vfovDeg, w, h float64) float64 {
+	vfovRad := vfovDeg * math.Pi / 180
+
+	ar := w / h
+	hfovRad := 2 * math.Atan(math.Tan(vfovRad/2)*ar)
+
+	return hfovRad * 180 / math.Pi
+}
+
 func EnterRenderLoop(config *libconfig.Config, displayMetadata *edidtools.DisplayMetadata, evdiCards []*EvdiDisplayMetadata) {
 	log.Info("Initializing AR driver")
 	headset, err := ardriver.GetDevice()
@@ -99,7 +108,9 @@ func EnterRenderLoop(config *libconfig.Config, displayMetadata *edidtools.Displa
 
 	headset.RegisterEventListeners(arEventListner)
 
-	fovY := float32(45.0)
+	fovY := float32(*config.DisplayConfig.FOV)
+	fovX := findHfovFromVfov(float64(fovY), float64(displayMetadata.MaxWidth), float64(displayMetadata.MaxHeight))
+
 	verticalSize := findMaxVerticalSize(fovY, 5.0)
 
 	camera := rl.NewCamera3D(
@@ -124,6 +135,21 @@ func EnterRenderLoop(config *libconfig.Config, displayMetadata *edidtools.Displa
 
 	horizontalSize := findOptimalHorizontalRes(float32(displayMetadata.MaxHeight), float32(displayMetadata.MaxWidth), verticalSize)
 	coreMesh := rl.GenMeshPlane(horizontalSize, verticalSize, 1, 1)
+
+	var radius float32
+
+	if *config.DisplayConfig.UseCircularSpacing == true {
+		radiusX := (horizontalSize / 2) / float32(math.Tan((float64(fovX)*math.Pi/180.0)/2))
+		radiusY := (verticalSize / 2) / float32(math.Tan((float64(fovY)*math.Pi/180.0)/2))
+
+		if radiusY > radiusX {
+			radius = radiusY
+		} else {
+			radius = radiusX
+		}
+
+		radius *= *config.DisplayConfig.RadiusMultiplier
+	}
 
 	movementVector := rl.Vector3{
 		X: 0.0,
@@ -170,6 +196,17 @@ func EnterRenderLoop(config *libconfig.Config, displayMetadata *edidtools.Displa
 
 		texture := rl.LoadTextureFromImage(image)
 		model := rl.LoadModelFromMesh(coreMesh)
+
+		// spin up/down
+		pitchRad := float32(-90 * rl.Deg2rad)
+		// spin left/right
+		yawRad := currentAngle * rl.Deg2rad
+
+		rotX := rl.MatrixRotateX(pitchRad)
+		rotY := rl.MatrixRotateY(yawRad)
+
+		transform := rl.MatrixMultiply(rotX, rotY)
+		model.Transform = transform
 
 		rl.SetMaterialTexture(model.Materials, rl.MapAlbedo, texture)
 
@@ -235,20 +272,35 @@ func EnterRenderLoop(config *libconfig.Config, displayMetadata *edidtools.Displa
 				card.EvdiNode.RequestUpdate(card.Buffer)
 			}
 
+			worldPos := rl.Vector3{
+				X: 0,
+				Y: verticalSize / 2,
+				Z: 0,
+			}
+
+			if *config.DisplayConfig.UseCircularSpacing == true {
+				yawRad := float32(rl.Deg2rad * rect.CurrentAngle)
+
+				// WTF?
+				posX := float32(math.Sin(float64(yawRad))) * radius
+				posZ := -float32(math.Cos(float64(yawRad))) * radius
+
+				worldPos.X = posX
+				worldPos.Z = posZ + radius
+			} else {
+				worldPos.X = rect.CurrentDisplaySpacing
+			}
+
 			rl.DrawModelEx(
 				rect.Model,
-				rl.Vector3{
-					X: rect.CurrentDisplaySpacing,
-					Y: verticalSize / 2,
-					Z: 0,
-				},
+				worldPos,
 				// rotate around X to make it vertical
 				rl.Vector3{
-					X: 1,
+					X: 0,
 					Y: 0,
 					Z: 0,
 				},
-				90,
+				0,
 				rl.Vector3{
 					X: 1,
 					Y: 1,
