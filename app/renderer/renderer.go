@@ -6,14 +6,14 @@ import (
 	"time"
 	"unsafe"
 
-	libconfig "git.terah.dev/UnrealXR/unrealxr/app/config"
-	"git.terah.dev/UnrealXR/unrealxr/app/edidtools"
-	"git.terah.dev/UnrealXR/unrealxr/ardriver"
-	arcommons "git.terah.dev/UnrealXR/unrealxr/ardriver/commons"
+	libconfig "git.lunr.sh/UnrealXR/unrealxr/app/config"
+	"git.lunr.sh/UnrealXR/unrealxr/app/edidtools"
+	"git.lunr.sh/UnrealXR/unrealxr/ardriver"
+	arcommons "git.lunr.sh/UnrealXR/unrealxr/ardriver/commons"
 	"github.com/charmbracelet/log"
 	"github.com/tebeka/atexit"
 
-	rl "git.terah.dev/UnrealXR/raylib-go/raylib"
+	rl "git.lunr.sh/UnrealXR/raylib-go/raylib"
 )
 
 type TextureModelPair struct {

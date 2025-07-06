@@ -1,4 +1,4 @@
-module git.terah.dev/UnrealXR/unrealxr/edidpatcher
+module git.lunr.sh/UnrealXR/unrealxr/edidpatcher
 
 go 1.24.3
 

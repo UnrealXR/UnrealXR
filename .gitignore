@@ -25,6 +25,11 @@ go.work.sum
 # env file
 .env
 
+# ---> EVDI
+# examples
+evdi/example/example
+evdi/example/photos
+
 # ---> UnrealXR
 # development dirs
 data

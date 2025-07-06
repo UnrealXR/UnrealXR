@@ -1,16 +1,18 @@
-module git.terah.dev/UnrealXR/unrealxr/app
+module git.lunr.sh/UnrealXR/unrealxr/app
 
 go 1.24.3
 
-replace git.terah.dev/UnrealXR/unrealxr/ardriver => ../ardriver
+replace git.lunr.sh/UnrealXR/unrealxr/ardriver => ../ardriver
 
-replace git.terah.dev/UnrealXR/unrealxr/edidpatcher => ../edidpatcher
+replace git.lunr.sh/UnrealXR/unrealxr/edidpatcher => ../edidpatcher
+
+replace git.lunr.sh/UnrealXR/unrealxr/evdi/libevdi => ../evdi/libevdi
 
 require (
-	git.terah.dev/UnrealXR/raylib-go/raylib v0.55.2-0.20250623002739-1468af2636e1
-	git.terah.dev/UnrealXR/unrealxr/ardriver v0.0.0-00010101000000-000000000000
-	git.terah.dev/UnrealXR/unrealxr/edidpatcher v0.0.0-00010101000000-000000000000
-	git.terah.dev/imterah/goevdi/libevdi v0.1.0-evdi1.14.10
+	git.lunr.sh/UnrealXR/raylib-go/raylib v0.55.2-0.20250706215948-ffb6d8108f50
+	git.lunr.sh/UnrealXR/unrealxr/ardriver v0.0.0-00010101000000-000000000000
+	git.lunr.sh/UnrealXR/unrealxr/edidpatcher v0.0.0-00010101000000-000000000000
+	git.lunr.sh/UnrealXR/unrealxr/evdi/libevdi v0.0.0-00010101000000-000000000000
 	github.com/anoopengineer/edidparser v0.0.0-20240602223913-86ca9ed3d2b0
 	github.com/charmbracelet/log v0.4.2
 	github.com/goccy/go-yaml v1.18.0
