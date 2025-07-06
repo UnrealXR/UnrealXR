@@ -10,18 +10,18 @@ import (
 	"syscall"
 	"time"
 
-	libconfig "git.terah.dev/UnrealXR/unrealxr/app/config"
-	"git.terah.dev/UnrealXR/unrealxr/app/edidtools"
-	"git.terah.dev/UnrealXR/unrealxr/app/renderer"
-	"git.terah.dev/UnrealXR/unrealxr/edidpatcher"
-	"git.terah.dev/imterah/goevdi/libevdi"
+	libconfig "git.lunr.sh/UnrealXR/unrealxr/app/config"
+	"git.lunr.sh/UnrealXR/unrealxr/app/edidtools"
+	"git.lunr.sh/UnrealXR/unrealxr/app/renderer"
+	"git.lunr.sh/UnrealXR/unrealxr/edidpatcher"
+	"git.lunr.sh/UnrealXR/unrealxr/evdi/libevdi"
 	"github.com/charmbracelet/log"
 	"github.com/goccy/go-yaml"
 	"github.com/kirsle/configdir"
 	"github.com/tebeka/atexit"
 	"github.com/urfave/cli/v3"
 
-	rl "git.terah.dev/UnrealXR/raylib-go/raylib"
+	rl "git.lunr.sh/UnrealXR/raylib-go/raylib"
 )
 
 func mainEntrypoint(context.Context, *cli.Command) error {

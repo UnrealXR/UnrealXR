@@ -1,7 +1,7 @@
 package renderer
 
 import (
-	"git.terah.dev/imterah/goevdi/libevdi"
+	"git.lunr.sh/UnrealXR/unrealxr/evdi/libevdi"
 )
 
 type EvdiDisplayMetadata struct {

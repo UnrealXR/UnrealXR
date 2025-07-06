@@ -1,14 +1,14 @@
 # UnrealXR
-[![Build Status](https://git.terah.dev/UnrealXR/unrealxr/actions/workflows/build.yml/badge.svg)](https://git.terah.dev/UnrealXR/unrealxr/actions)
-[![GoDoc](https://godoc.org/git.terah.dev/UnrealXR/unrealxr?status.svg)](https://godoc.org/git.terah.dev/UnrealXR/unrealxr)
-[![Go Report Card](https://goreportcard.com/badge/git.terah.dev/UnrealXR/unrealxr/app)](https://goreportcard.com/report/git.terah.dev/UnrealXR/unrealxr/app)
-[![License](https://img.shields.io/badge/license-BSD--3--Clause-green)](https://git.terah.dev/imterah/goevdi/src/branch/main/app/LICENSE)
+[![Build Status](https://git.lunr.sh/UnrealXR/unrealxr/actions/workflows/build.yml/badge.svg)](https://git.lunr.sh/UnrealXR/unrealxr/actions)
+[![GoDoc](https://godoc.org/git.lunr.sh/UnrealXR/unrealxr?status.svg)](https://godoc.org/git.lunr.sh/UnrealXR/unrealxr)
+[![Go Report Card](https://goreportcard.com/badge/git.lunr.sh/UnrealXR/unrealxr/app)](https://goreportcard.com/report/git.lunr.sh/UnrealXR/unrealxr/app)
+[![License](https://img.shields.io/badge/license-BSD--3--Clause-green)](https://git.lunr.sh/UnrealXR/unrealxr/src/branch/main/app/LICENSE)
 
 UnrealXR is a spatial multi-display renderer for the Xreal line of devices, enabling immersive, simultaneous viewing of multiple desktops and applications in 3D space.
 
 ## Why not Breezy Desktop?
 
-1. **Limited desktop support**: Breezy only supports GNOME Wayland, whereas UnrealXR supports all desktops as long as they are Wayland and implement the [drm-lease-v1](https://wayland.app/protocols/drm-lease-v1) protocol. All major desktops aside from [Sway](https://swaywm.org/) and [Gamescope](https://wiki.archlinux.org/title/Gamescope) support this. [UnrealXR may add X11 support in the future](https://git.terah.dev/imterah/unrealxr/issues/1).
+1. **Limited desktop support**: Breezy only supports GNOME Wayland, whereas UnrealXR supports all desktops as long as they are Wayland and implement the [drm-lease-v1](https://wayland.app/protocols/drm-lease-v1) protocol. All major desktops aside from [Sway](https://swaywm.org/) and [Gamescope](https://wiki.archlinux.org/title/Gamescope) support this. [UnrealXR may add X11 support in the future](https://git.lunr.sh/imterah/unrealxr/issues/1).
 2. **Pricing**: UnrealXR will always be free and open source. The catch is that since Breezy costs money, it will likely have more of an "out-of-the-box" working experience, and additionally have more polish.
 
 *However*, Breezy Desktop supports more AR headsets. We only support Xreal devices as that's all I have.
@@ -36,4 +36,4 @@ Just run `make` in the root directory.
 
 ## Development Guide
 
-See [HACKING.md](https://git.terah.dev/UnrealXR/unrealxr/src/branch/main/HACKING.md).
+See [HACKING.md](https://git.lunr.sh/UnrealXR/unrealxr/src/branch/main/HACKING.md).

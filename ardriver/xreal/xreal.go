@@ -4,7 +4,7 @@
 package xreal
 
 import (
-	xreal "git.terah.dev/UnrealXR/unrealxr/ardriver/xreal/xrealsrc"
+	xreal "git.lunr.sh/UnrealXR/unrealxr/ardriver/xreal/xrealsrc"
 )
 
 var IsXrealEnabled = true
