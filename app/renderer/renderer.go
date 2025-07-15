@@ -223,7 +223,7 @@ func EnterRenderLoop(config *libconfig.Config, displayMetadata *edidtools.Displa
 	for !rl.WindowShouldClose() {
 		if !displayMetadata.DeviceQuirks.UsesMouseMovement {
 			if hasSensorInitDelayQuirk {
-				if time.Now().Sub(sensorInitStartTime) > time.Duration(displayMetadata.DeviceQuirks.SensorInitDelay)*time.Second {
+				if time.Since(sensorInitStartTime) > time.Duration(displayMetadata.DeviceQuirks.SensorInitDelay)*time.Second {
 					log.Info("Movement is now enabled.")
 					hasSensorInitDelayQuirk = false
 				}
@@ -235,7 +235,7 @@ func EnterRenderLoop(config *libconfig.Config, displayMetadata *edidtools.Displa
 					lookVector.Z = (currentRoll - previousRoll) * 6.5
 				}
 
-				// evil look hacks to not randomly explode
+				// evil look hacks to not randomly break shit
 				maxTrustedSize := float64(7)
 
 				if math.Abs(float64(lookVector.X)) > maxTrustedSize {
