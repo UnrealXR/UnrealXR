@@ -12,6 +12,7 @@ import (
 
 	libconfig "git.lunr.sh/UnrealXR/unrealxr/app/config"
 	"git.lunr.sh/UnrealXR/unrealxr/app/edidtools"
+	"git.lunr.sh/UnrealXR/unrealxr/app/platformtools"
 	"git.lunr.sh/UnrealXR/unrealxr/app/renderer"
 	"git.lunr.sh/UnrealXR/unrealxr/edidpatcher"
 	"git.lunr.sh/UnrealXR/unrealxr/evdi/libevdi"
@@ -25,21 +26,6 @@ import (
 )
 
 func mainEntrypoint(context.Context, *cli.Command) error {
-	// Allow for clean exits
-	c := make(chan os.Signal, 1)
-	signal.Notify(c, os.Interrupt, syscall.SIGTERM)
-
-	go func() {
-		<-c
-		log.Info("Exiting...")
-		atexit.Exit(1)
-	}()
-
-	// TODO: add built-in privesc
-	if os.Geteuid() != 0 {
-		return fmt.Errorf("this program must be run as root")
-	}
-
 	log.Info("Initializing UnrealXR")
 
 	// Allow for overriding the config directory
@@ -79,7 +65,33 @@ func mainEntrypoint(context.Context, *cli.Command) error {
 		return fmt.Errorf("failed to parse config file: %w", err)
 	}
 
+	// Run privilege escalation if needed
+	if os.Geteuid() != -1 {
+		log.Info("Attempting to escalate privileges and restart process")
+
+		if os.Getuid() == 0 || os.Geteuid() == 0 {
+			log.Warn("Running directly as root is discouraged and not recommended. This application will automatically escelate to root when needed")
+		} else {
+			err := platformtools.PrivilegeEscalate(configDir)
+
+			if err != nil {
+				return fmt.Errorf("failed to escalate privileges: %w", err)
+			}
+		}
+	}
+
 	libconfig.InitializePotentiallyMissingConfigValues(config)
+
+	// Allow for clean exits
+	c := make(chan os.Signal, 1)
+	signal.Notify(c, os.Interrupt, syscall.SIGTERM)
+
+	go func() {
+		<-c
+		log.Info("Exiting...")
+		atexit.Exit(1)
+	}()
+
 	log.Debug("Attempting to read display EDID file and fetch metadata")
 
 	displayMetadata, err := edidtools.FetchXRGlassEDID(*config.Overrides.AllowUnsupportedDevices)

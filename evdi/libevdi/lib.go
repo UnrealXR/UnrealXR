@@ -517,9 +517,9 @@ func Open(parentDevice *string) (*EvdiNode, error) {
 
 // Checks if Xorg is running.
 func IsXorgRunning() bool {
-	xorgRunningC := C.Xorg_running()
+	xorgRunning := C.Xorg_running()
 
-	return bool(xorgRunningC)
+	return bool(xorgRunning)
 }
 
 // Gets the underlying library version. Based on the C function `evdi_get_lib_version()`.

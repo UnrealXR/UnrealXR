@@ -1,5 +1,5 @@
 APP_DIR := ./app
-OUTPUT := ./uxr
+OUTPUT := ./unrealxr
 TAGS := xreal noaudio drm drm_leasing drm_disable_input
 
 .PHONY: all build clean
