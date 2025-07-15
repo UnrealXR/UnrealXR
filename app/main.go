@@ -66,7 +66,7 @@ func mainEntrypoint(context.Context, *cli.Command) error {
 	}
 
 	// Run privilege escalation if needed
-	if os.Geteuid() != -1 {
+	if os.Geteuid() != -1 && os.Getenv("UXR_HAS_PRIVESC") != "1" {
 		log.Info("Attempting to escalate privileges and restart process")
 
 		if os.Getuid() == 0 || os.Geteuid() == 0 {

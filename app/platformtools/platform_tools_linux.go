@@ -10,11 +10,6 @@ import (
 	"path"
 )
 
-var (
-	commandLineOptionsGeneric = "UNREALXR_LOG_LEVEL=\"%s\" UNREALXR_CONFIG_PATH=\"%s\" WAYLAND_DISPLAY=\"%s\" XDG_RUNTIME_DIR=\"%s\" %s"
-	commandLineOptionsNix     = "UNREALXR_LOG_LEVEL=\"%s\" UNREALXR_CONFIG_PATH=\"%s\" WAYLAND_DISPLAY=\"%s\" XDG_RUNTIME_DIR=\"%s\" LD_LIBRARY_PATH=\"%s\" PATH=\"%s\" %s"
-)
-
 // Checks if we're in a Nix shell (all Linux OSes), or if we're in a NixOS system
 func isNixLikeEnvironment() bool {
 	if os.Getenv("IN_NIX_SHELL") != "" {
@@ -42,9 +37,31 @@ func PrivilegeEscalate(configDir string) error {
 	var command *exec.Cmd
 
 	if isNixLikeEnvironment() {
-		command = exec.Command("pkexec", "--keep-cwd", "/usr/bin/env", "bash", "-c", fmt.Sprintf(commandLineOptionsNix, logLevel, configDir, waylandDisplay, rootXDGRuntimeDir, libraryPath, systemPath, executablePath))
+		command = exec.Command(
+			"pkexec",
+			"--keep-cwd",
+			"/usr/bin/env",
+			"UXR_HAS_PRIVESC=1",
+			"UNREALXR_LOG_LEVEL="+logLevel,
+			"UNREALXR_CONFIG_PATH="+configDir,
+			"WAYLAND_DISPLAY="+waylandDisplay,
+			"XDG_RUNTIME_DIR="+rootXDGRuntimeDir,
+			"LD_LIBRARY_PATH="+libraryPath,
+			"PATH="+systemPath,
+			executablePath,
+		)
 	} else {
-		command = exec.Command("pkexec", "--keep-cwd", "/usr/bin/env", "bash", "-c", fmt.Sprintf(commandLineOptionsGeneric, logLevel, configDir, waylandDisplay, rootXDGRuntimeDir, executablePath))
+		command = exec.Command(
+			"pkexec",
+			"--keep-cwd",
+			"/usr/bin/env",
+			"UXR_HAS_PRIVESC=1",
+			"UNREALXR_LOG_LEVEL="+logLevel,
+			"UNREALXR_CONFIG_PATH="+configDir,
+			"WAYLAND_DISPLAY="+waylandDisplay,
+			"XDG_RUNTIME_DIR="+rootXDGRuntimeDir,
+			executablePath,
+		)
 	}
 
 	command.Stdin = os.Stdin
